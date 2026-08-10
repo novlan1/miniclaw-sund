@@ -1,8 +1,4 @@
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.zh-CN.md">中文</a>
-</p>
-
-<p align="center">
   <img src="https://raw.githubusercontent.com/sundl123/miniclaw/main/assets/logo.png" width="420" alt="miniclaw">
 </p>
 
@@ -15,6 +11,10 @@
   <a href="https://pypi.org/project/miniclaw/"><img src="https://img.shields.io/pypi/v/miniclaw?style=flat-square" alt="PyPI"></a>
   <a href="https://pypi.org/project/miniclaw/"><img src="https://img.shields.io/pypi/pyversions/miniclaw?style=flat-square" alt="Python"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License"></a>
+</p>
+
+<p align="center">
+  <a href="README.md">English</a> | 中文
 </p>
 
 ---
@@ -105,32 +105,32 @@ flowchart LR
 
 每个模块职责单一 —— 建议按以下顺序阅读：
 
-| 模块 | 功能 |
-|------|------|
-| [`cli.py`](miniclaw/cli.py) | 命令行 REPL，解析输入，处理 `/plan`、`/clear` 等命令 |
-| [`api.py`](miniclaw/api.py) | 向 LLM 发送消息，运行工具调用循环，直到模型停止调用工具 |
-| [`tools/`](miniclaw/tools/) | 工作区工具 + `Skill`、`memory`、`session_search`、`Agent` 的调度 |
-| [`context/`](miniclaw/context/) | 微压缩、自动摘要、上下文窗口管理 |
-| [`memory/`](miniclaw/memory/) | 持久化记忆存储和 `memory` 工具 |
-| [`sessions/`](miniclaw/sessions/) | 会话数据库、事件记录和 `session_search` 工具 |
-| [`subagent/`](miniclaw/subagent/) | 子智能体运行器和 `Agent` 工具 |
-| [`plan_mode.py`](miniclaw/plan_mode.py) | Plan 模式的权限守卫：允许只读操作，阻止写操作 |
-| [`skills.py`](miniclaw/skills.py) | 扫描 `.miniclaw/skills/` 并将技能元数据注入系统提示 |
-| [`settings.py`](miniclaw/settings.py) | 加载并合并全局和工作区级别的 JSON 配置 |
-| [`dirs.py`](miniclaw/dirs.py) | 解析用户级（`~/.miniclaw/`）和工作区级路径 |
-| [`config.py`](miniclaw/config.py) | 路径安全检查与 API 常量 |
-| [`ui.py`](miniclaw/ui.py) | 终端 UI：启动横幅、彩色输出（基于 rich） |
-| [`dev_logging.py`](miniclaw/dev_logging.py) | 开发者日志，输出到 `~/.miniclaw/logs/` |
+| 模块                                        | 功能                                                             |
+| ------------------------------------------- | ---------------------------------------------------------------- |
+| [`cli.py`](miniclaw/cli.py)                 | 命令行 REPL，解析输入，处理 `/plan`、`/clear` 等命令             |
+| [`api.py`](miniclaw/api.py)                 | 向 LLM 发送消息，运行工具调用循环，直到模型停止调用工具          |
+| [`tools/`](miniclaw/tools/)                 | 工作区工具 + `Skill`、`memory`、`session_search`、`Agent` 的调度 |
+| [`context/`](miniclaw/context/)             | 微压缩、自动摘要、上下文窗口管理                                 |
+| [`memory/`](miniclaw/memory/)               | 持久化记忆存储和 `memory` 工具                                   |
+| [`sessions/`](miniclaw/sessions/)           | 会话数据库、事件记录和 `session_search` 工具                     |
+| [`subagent/`](miniclaw/subagent/)           | 子智能体运行器和 `Agent` 工具                                    |
+| [`plan_mode.py`](miniclaw/plan_mode.py)     | Plan 模式的权限守卫：允许只读操作，阻止写操作                    |
+| [`skills.py`](miniclaw/skills.py)           | 扫描 `.miniclaw/skills/` 并将技能元数据注入系统提示              |
+| [`settings.py`](miniclaw/settings.py)       | 加载并合并全局和工作区级别的 JSON 配置                           |
+| [`dirs.py`](miniclaw/dirs.py)               | 解析用户级（`~/.miniclaw/`）和工作区级路径                       |
+| [`config.py`](miniclaw/config.py)           | 路径安全检查与 API 常量                                          |
+| [`ui.py`](miniclaw/ui.py)                   | 终端 UI：启动横幅、彩色输出（基于 rich）                         |
+| [`dev_logging.py`](miniclaw/dev_logging.py) | 开发者日志，输出到 `~/.miniclaw/logs/`                           |
 
 ## 命令
 
-| 命令 | 描述 |
-|------|------|
-| `/plan` | 进入 Plan 模式（只读探索） |
-| `/plan <描述>` | 进入 Plan 模式并附带任务描述 |
-| `/clear` | 清除对话历史 |
-| `/model` | 显示当前模型 |
-| `/quit` `/exit` `/q` | 退出 |
+| 命令                 | 描述                         |
+| -------------------- | ---------------------------- |
+| `/plan`              | 进入 Plan 模式（只读探索）   |
+| `/plan <描述>`       | 进入 Plan 模式并附带任务描述 |
+| `/clear`             | 清除对话历史                 |
+| `/model`             | 显示当前模型                 |
+| `/quit` `/exit` `/q` | 退出                         |
 
 **快捷键：** `Ctrl+J` 换行，`Up/Down` 浏览历史，`Ctrl+C` 取消，`Ctrl+D` 退出。
 
@@ -166,12 +166,12 @@ flowchart LR
 
 所有 `llm` 字段均可通过环境变量覆盖（环境变量优先级最高）：
 
-| 变量 | 描述 |
-|------|------|
-| `LLM_API_KEY` | LLM API 密钥 |
-| `LLM_MODEL` | 模型名称（默认：`MiniMax-M2.7`） |
-| `LLM_BASE_URL` | 兼容 OpenAI 的 API 基础 URL |
-| `LLM_HTTP_TIMEOUT` | HTTP 超时时间（秒，默认：300） |
+| 变量                 | 描述                                                     |
+| -------------------- | -------------------------------------------------------- |
+| `LLM_API_KEY`        | LLM API 密钥                                             |
+| `LLM_MODEL`          | 模型名称（默认：`MiniMax-M2.7`）                         |
+| `LLM_BASE_URL`       | 兼容 OpenAI 的 API 基础 URL                              |
+| `LLM_HTTP_TIMEOUT`   | HTTP 超时时间（秒，默认：300）                           |
 | `MINICLAW_WORKSPACE` | 工作区目录（也可通过 `-w` 参数指定；CLI 参数优先级最高） |
 
 ## 技能系统
@@ -225,10 +225,10 @@ miniclaw/
 
 ## 设计文档
 
-| 文档 | 描述 |
-|------|------|
+| 文档                                                      | 描述                                                                                   |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | [架构分析](docs/design/miniclaw-architecture-analysis.md) | 从 Agent Loop、Skill 机制、Tool 设计、Prompt Cache、Plan Mode 五个维度深入分析项目架构 |
-| [Sub-agent](docs/design/subagent.md) | Sub-agent（`Agent` tool）设计与实现说明 |
+| [Sub-agent](docs/design/subagent.md)                      | Sub-agent（`Agent` tool）设计与实现说明                                                |
 
 ## 运行测试
 
