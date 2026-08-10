@@ -1,8 +1,8 @@
 {
   "llm": {
     "api_key": "",
-    "model": "MiniMax-M2.7",
-    "base_url": "https://api.minimaxi.com/v1",
+    "model": "deepseek-V4-pro",
+    "base_url": "https://tokenhub.tencentmaas.com/v1",
     "timeout": 300
   },
   "plan_mode": {

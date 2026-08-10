@@ -108,6 +108,6 @@ def resolve_glob_pattern(
     return full_pattern, workspace_root
 
 
-DEFAULT_BASE_URL = "https://api.minimaxi.com/v1"
-DEFAULT_MODEL = "MiniMax-M2.7"
+DEFAULT_BASE_URL = "https://tokenhub.tencentmaas.com/v1"
+DEFAULT_MODEL = "deepseek-V4-pro"
 DEFAULT_HTTP_TIMEOUT = 300

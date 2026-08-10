@@ -333,7 +333,7 @@ def run_turn_with_tools(
             print_output=True,
             print_reasoning=print_reasoning,
             timeout=timeout,
-            extra_body={"reasoning_split": True},
+            extra_body={"thinking": {"type": "disabled"}},
         )
 
         if cfg is not None:
