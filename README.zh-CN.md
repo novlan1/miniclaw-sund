@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>你的迷你编程爪</strong><br>
-  <em>用约 1500 行 Python 学习如何构建 AI 编程智能体</em>
+  <em>用约 2000 行 Python 学习如何构建 AI 编程智能体</em>
 </p>
 
 <p align="center">
@@ -28,7 +28,7 @@
 ```
 你输入一个请求
   -> LLM 进行思考
-    -> LLM 调用工具（read / write / edit / grep / glob / bash）
+    -> LLM 调用工具（read / write / edit / grep / glob / bash / todo_write / ask_followup_question）
       -> 工具在你的工作区中执行
         -> LLM 看到执行结果
           -> 重复以上过程，直到完成
@@ -38,14 +38,15 @@
 
 ## 功能特性
 
-- **10 个工具** —— `read`、`write`、`edit`、`glob`、`grep`、`bash`、`Skill`、`memory`、`session_search`、`Agent`。工作区文件操作，外加按需加载的技能、持久化记忆、历史会话回溯和子智能体。
+- **12 个工具** —— `read`、`write`、`edit`、`glob`、`grep`、`bash`、`Skill`、`todo_write`、`ask_followup_question`、`memory`、`session_search`、`Agent`。工作区文件操作，外加任务追踪、用户澄清、按需加载的技能、持久化记忆、历史会话回溯和子智能体。
+- **项目规则** —— 自动加载工作区的 `AGENTS.md` 和 `.miniclaw/rules/*.md` 到系统提示中。项目规范和编码指南始终对智能体可见。
 - **Plan 模式** —— 智能体可进入只读规划阶段：探索代码、生成结构化计划，只有在你批准后才开始执行。写操作在你说"开始"之前会被阻止。
 - **技能系统** —— 在 `.miniclaw/skills/<名称>/` 下放入一个 `SKILL.md`，智能体就能学会新技能。技能会自动注入到系统提示中；`Skill` 工具按需加载完整指令。
 - **记忆系统** —— 持久化信息存储在 `~/.miniclaw/memory/MEMORY.md` 中，每个会话自动注入。智能体可以读写主题文件来记录更长的笔记。
 - **会话搜索** —— 对话记录在本地保存；智能体可以浏览、全文搜索或滚动查看历史会话。
 - **子智能体** —— 可选的 `Agent` 工具会启动一个隔离的子智能体（`explore` / `general`），让调研或辅助任务不会污染主上下文。通过 `subagent.enabled` 启用。
 - **上下文管理** —— 微压缩和自动摘要功能让长对话保持在上下文窗口内。
-- **任意兼容 OpenAI 的 LLM** —— 只需修改一个环境变量即可切换模型。默认：MiniMax-M2.7。
+- **任意兼容 OpenAI 的 LLM** —— 只需修改一个环境变量即可切换模型。默认：DeepSeek V4 Pro（通过腾讯云 TokenHub）。
 - **工作区隔离** —— 所有文件操作被限制在工作区目录内，无法通过 `..` 路径逃逸。
 
 ## 快速开始
@@ -97,7 +98,7 @@ pip install -e .
 flowchart LR
     User([你]) -->|消息| REPL[cli.py<br>REPL]
     REPL -->|消息 + 工具| LLM[api.py<br>LLM API]
-    LLM -->|工具调用| Tools[tools/<br>10 个工具]
+    LLM -->|工具调用| Tools[tools/<br>12 个工具]
     Tools -->|结果| LLM
     LLM -->|最终回复| REPL
     REPL -->|展示| User
@@ -109,7 +110,8 @@ flowchart LR
 | ------------------------------------------- | ---------------------------------------------------------------- |
 | [`cli.py`](miniclaw/cli.py)                 | 命令行 REPL，解析输入，处理 `/plan`、`/clear` 等命令             |
 | [`api.py`](miniclaw/api.py)                 | 向 LLM 发送消息，运行工具调用循环，直到模型停止调用工具          |
-| [`tools/`](miniclaw/tools/)                 | 工作区工具 + `Skill`、`memory`、`session_search`、`Agent` 的调度 |
+| [`tools/`](miniclaw/tools/)                 | 工作区工具 + `Skill`、`todo_write`、`ask_followup_question`、`memory`、`session_search`、`Agent` 的调度 |
+| [`rules.py`](miniclaw/rules.py)             | 自动加载 `AGENTS.md` 和 `.miniclaw/rules/*.md` 到系统提示           |
 | [`context/`](miniclaw/context/)             | 微压缩、自动摘要、上下文窗口管理                                 |
 | [`memory/`](miniclaw/memory/)               | 持久化记忆存储和 `memory` 工具                                   |
 | [`sessions/`](miniclaw/sessions/)           | 会话数据库、事件记录和 `session_search` 工具                     |
@@ -144,8 +146,8 @@ flowchart LR
 {
   "llm": {
     "api_key": "你的_API_密钥",
-    "model": "MiniMax-M2.7",
-    "base_url": "https://api.minimaxi.com/v1",
+    "model": "deepseek-V4-pro",
+    "base_url": "https://tokenhub.tencentmaas.com/v1",
     "timeout": 300
   },
   "plan_mode": {
@@ -169,14 +171,27 @@ flowchart LR
 | 变量                 | 描述                                                     |
 | -------------------- | -------------------------------------------------------- |
 | `LLM_API_KEY`        | LLM API 密钥                                             |
-| `LLM_MODEL`          | 模型名称（默认：`MiniMax-M2.7`）                         |
-| `LLM_BASE_URL`       | 兼容 OpenAI 的 API 基础 URL                              |
+| `LLM_MODEL`          | 模型名称（默认：`deepseek-V4-pro`）                       |
+| `LLM_BASE_URL`       | 兼容 OpenAI 的 API 基础 URL（默认：TokenHub）              |
 | `LLM_HTTP_TIMEOUT`   | HTTP 超时时间（秒，默认：300）                           |
 | `MINICLAW_WORKSPACE` | 工作区目录（也可通过 `-w` 参数指定；CLI 参数优先级最高） |
 
 ## 技能系统
 
 在 `.miniclaw/skills/<技能名称>/SKILL.md` 中创建文件，包含 YAML 前置元数据（`name`、`description`）和指令正文。智能体在启动时看到技能列表，并按需读取完整的 SKILL.md。
+
+## 规则系统
+
+在工作区根目录放置 `AGENTS.md` 或在 `.miniclaw/rules/` 下放入 `.md` 文件 —— 它们会被自动注入到系统提示中，智能体始终能看见你的项目规范。支持多个规则文件：
+
+```
+workspace/
+├── AGENTS.md                     # 项目顶层规则
+└── .miniclaw/
+    └── rules/
+        ├── style.md              # 编码风格指南
+        └── security.md           # 安全约束
+```
 
 ## 文件布局
 
@@ -189,7 +204,9 @@ flowchart LR
 
 {workspace}/.miniclaw/          # 工作区级（每个项目独立）
 ├── config.json                 # 工作区配置（优先级更高）
+├── todos.json                  # 当前任务列表（由 todo_write 管理）
 ├── plans/                      # Plan 文件
+├── rules/                      # 项目级规则 .md 文件
 └── skills/                     # 技能目录
 ```
 
@@ -203,7 +220,10 @@ miniclaw/
 ├── miniclaw/            # Python 包
 │   ├── cli.py           # REPL
 │   ├── api.py           # LLM API + 工具循环
+│   ├── rules.py         # 自动加载 AGENTS.md + .miniclaw/rules/*.md
 │   ├── tools/           # 工具实现 + 调度
+│   │   ├── ask.py       # ask_followup_question 工具
+│   │   └── todo_write.py # todo_write 工具
 │   ├── context/         # 上下文压缩 + 摘要
 │   ├── memory/          # 持久化记忆工具
 │   ├── sessions/        # 会话记录 + 搜索
@@ -212,7 +232,7 @@ miniclaw/
 │   ├── config.py        # 路径安全 + 常量
 │   ├── dirs.py          # 目录解析
 │   ├── settings.py      # 配置加载 + 合并
-│   ├── skills.py        # 技能扫描
+│   ├── skills.py        # 技能扫描 + 系统提示构建
 │   ├── ui.py            # 终端 UI（rich）
 │   └── dev_logging.py   # 开发者日志
 ├── tests/               # 单元测试

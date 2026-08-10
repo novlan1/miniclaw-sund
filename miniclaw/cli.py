@@ -21,6 +21,7 @@ from miniclaw.settings import (
 )
 from miniclaw.context import format_context_status, manual_compact, init_ctx_mgmt
 from miniclaw.skills import build_system_prompt, discover_skills
+from miniclaw.rules import load_rules
 from miniclaw.memory.store import MemoryStore
 from miniclaw.memory.status import format_memory_status
 from miniclaw.sessions.records import RecordsWriter
@@ -77,6 +78,7 @@ def _init_session(args: argparse.Namespace) -> dict:
         registry.list_metadata(),
         workspace_root=workspace,
         memory_block=memory_block,
+        rules_block=load_rules(workspace),
     )
 
     return {
