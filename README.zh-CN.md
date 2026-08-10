@@ -46,7 +46,7 @@
 - **会话搜索** —— 对话记录在本地保存；智能体可以浏览、全文搜索或滚动查看历史会话。
 - **子智能体** —— 可选的 `Agent` 工具会启动一个隔离的子智能体（`explore` / `general`），让调研或辅助任务不会污染主上下文。通过 `subagent.enabled` 启用。
 - **上下文管理** —— 微压缩和自动摘要功能让长对话保持在上下文窗口内。
-- **任意兼容 OpenAI 的 LLM** —— 只需修改一个环境变量即可切换模型。默认：DeepSeek V4 Pro（通过腾讯云 TokenHub）。
+- **任意兼容 OpenAI 的 LLM** —— 只需修改一个环境变量即可切换模型。默认：MiniMax-M2.7。
 - **工作区隔离** —— 所有文件操作被限制在工作区目录内，无法通过 `..` 路径逃逸。
 
 ## 快速开始
@@ -146,8 +146,8 @@ flowchart LR
 {
   "llm": {
     "api_key": "你的_API_密钥",
-    "model": "deepseek-V4-pro",
-    "base_url": "https://tokenhub.tencentmaas.com/v1",
+    "model": "MiniMax-M2.7",
+    "base_url": "https://api.minimaxi.com/v1",
     "timeout": 300
   },
   "plan_mode": {
@@ -171,8 +171,8 @@ flowchart LR
 | 变量                 | 描述                                                     |
 | -------------------- | -------------------------------------------------------- |
 | `LLM_API_KEY`        | LLM API 密钥                                             |
-| `LLM_MODEL`          | 模型名称（默认：`deepseek-V4-pro`）                       |
-| `LLM_BASE_URL`       | 兼容 OpenAI 的 API 基础 URL（默认：TokenHub）              |
+| `LLM_MODEL`          | 模型名称（默认：`MiniMax-M2.7`）                         |
+| `LLM_BASE_URL`       | 兼容 OpenAI 的 API 基础 URL                              |
 | `LLM_HTTP_TIMEOUT`   | HTTP 超时时间（秒，默认：300）                           |
 | `MINICLAW_WORKSPACE` | 工作区目录（也可通过 `-w` 参数指定；CLI 参数优先级最高） |
 

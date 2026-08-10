@@ -48,7 +48,8 @@ If you want to **learn**, **teach**, or **hack on** an AI agent, start here.
 - **Session Search** -- Conversations are recorded locally; the agent can browse, full-text search, or scroll through past sessions.
 - **Sub-agents** -- Optional `Agent` tool spawns an isolated sub-agent (`explore` / `general`) so research or side tasks don't pollute the main context. Enable with `subagent.enabled`.
 - **Context Management** -- Micro-compaction and auto-summarize keep long conversations within the context window.
-- **Any OpenAI-compatible LLM** -- Swap models by changing one environment variable. Default: DeepSeek V4 Pro via Tencent Cloud TokenHub.
+- **Any OpenAI-compatible LLM** -- Swap models by changing one environment variable. Default: MiniMax-M2.7.
+- **Any OpenAI-compatible LLM** -- Swap models by changing one environment variable. Default: MiniMax-M2.7.
 - **Workspace Isolation** -- All file operations are sandboxed to your workspace directory. No `..` path escapes.
 
 ## Quick Start
@@ -148,8 +149,8 @@ Run `miniclaw init` to create the default config. Use `miniclaw init --force` to
 {
   "llm": {
     "api_key": "your_api_key",
-    "model": "deepseek-V4-pro",
-    "base_url": "https://tokenhub.tencentmaas.com/v1",
+    "model": "MiniMax-M2.7",
+    "base_url": "https://api.minimaxi.com/v1",
     "timeout": 300
   },
   "plan_mode": {
@@ -170,13 +171,13 @@ Run `miniclaw init` to create the default config. Use `miniclaw init --force` to
 
 All `llm` fields can be overridden by environment variables (env vars take priority):
 
-| Variable             | Description                                                       |
-| -------------------- | ----------------------------------------------------------------- |
-| `LLM_API_KEY`        | LLM API key                                                       |
-| `LLM_MODEL`          | Model name (default: `deepseek-V4-pro`)                           |
-| `LLM_BASE_URL`       | OpenAI-compatible API base URL (default: TokenHub)                |
-| `LLM_HTTP_TIMEOUT`   | HTTP timeout in seconds (default: 300)                            |
-| `MINICLAW_WORKSPACE` | Workspace directory (also `-w` flag; CLI flag wins)               |
+| Variable             | Description                                         |
+| -------------------- | --------------------------------------------------- |
+| `LLM_API_KEY`        | LLM API key                                         |
+| `LLM_MODEL`          | Model name (default: `MiniMax-M2.7`)                |
+| `LLM_BASE_URL`       | OpenAI-compatible API base URL                      |
+| `LLM_HTTP_TIMEOUT`   | HTTP timeout in seconds (default: 300)              |
+| `MINICLAW_WORKSPACE` | Workspace directory (also `-w` flag; CLI flag wins) |
 
 ## Skills
 
