@@ -1,3 +1,5 @@
+
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/sundl123/miniclaw/main/assets/logo.png" width="420" alt="miniclaw">
 </p>
@@ -11,6 +13,10 @@
   <a href="https://pypi.org/project/miniclaw/"><img src="https://img.shields.io/pypi/v/miniclaw?style=flat-square" alt="PyPI"></a>
   <a href="https://pypi.org/project/miniclaw/"><img src="https://img.shields.io/pypi/pyversions/miniclaw?style=flat-square" alt="Python"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License"></a>
+</p>
+
+<p align="center">
+  English | <a href="README.zh-CN.md">中文</a>
 </p>
 
 ---
@@ -101,32 +107,32 @@ flowchart LR
 
 Each module has a single responsibility -- read through them in this order:
 
-| Module | What it does |
-|--------|-------------|
-| [`cli.py`](miniclaw/cli.py) | Command-line REPL, parses input, handles `/plan`, `/clear`, etc. |
-| [`api.py`](miniclaw/api.py) | Sends messages to the LLM, runs the tool-call loop until the model stops calling tools |
-| [`tools/`](miniclaw/tools/) | Workspace tools + dispatch for `Skill`, `memory`, `session_search`, `Agent` |
-| [`context/`](miniclaw/context/) | Micro-compaction, auto-summarize, context window management |
-| [`memory/`](miniclaw/memory/) | Persistent memory store and `memory` tool |
-| [`sessions/`](miniclaw/sessions/) | Session DB, event records, and `session_search` tool |
-| [`subagent/`](miniclaw/subagent/) | Sub-agent runner and `Agent` tool |
-| [`plan_mode.py`](miniclaw/plan_mode.py) | Permission guard for plan mode: allows read-only ops, blocks writes |
-| [`skills.py`](miniclaw/skills.py) | Scans `.miniclaw/skills/` and injects skill metadata into the system prompt |
-| [`settings.py`](miniclaw/settings.py) | Loads and merges config from global + workspace JSON files |
-| [`dirs.py`](miniclaw/dirs.py) | Resolves user-level (`~/.miniclaw/`) and workspace-level paths |
-| [`config.py`](miniclaw/config.py) | Path safety checks and API constants |
-| [`ui.py`](miniclaw/ui.py) | Terminal UI: startup banner, colored output (powered by rich) |
-| [`dev_logging.py`](miniclaw/dev_logging.py) | Developer logging to `~/.miniclaw/logs/` |
+| Module                                      | What it does                                                                           |
+| ------------------------------------------- | -------------------------------------------------------------------------------------- |
+| [`cli.py`](miniclaw/cli.py)                 | Command-line REPL, parses input, handles `/plan`, `/clear`, etc.                       |
+| [`api.py`](miniclaw/api.py)                 | Sends messages to the LLM, runs the tool-call loop until the model stops calling tools |
+| [`tools/`](miniclaw/tools/)                 | Workspace tools + dispatch for `Skill`, `memory`, `session_search`, `Agent`            |
+| [`context/`](miniclaw/context/)             | Micro-compaction, auto-summarize, context window management                            |
+| [`memory/`](miniclaw/memory/)               | Persistent memory store and `memory` tool                                              |
+| [`sessions/`](miniclaw/sessions/)           | Session DB, event records, and `session_search` tool                                   |
+| [`subagent/`](miniclaw/subagent/)           | Sub-agent runner and `Agent` tool                                                      |
+| [`plan_mode.py`](miniclaw/plan_mode.py)     | Permission guard for plan mode: allows read-only ops, blocks writes                    |
+| [`skills.py`](miniclaw/skills.py)           | Scans `.miniclaw/skills/` and injects skill metadata into the system prompt            |
+| [`settings.py`](miniclaw/settings.py)       | Loads and merges config from global + workspace JSON files                             |
+| [`dirs.py`](miniclaw/dirs.py)               | Resolves user-level (`~/.miniclaw/`) and workspace-level paths                         |
+| [`config.py`](miniclaw/config.py)           | Path safety checks and API constants                                                   |
+| [`ui.py`](miniclaw/ui.py)                   | Terminal UI: startup banner, colored output (powered by rich)                          |
+| [`dev_logging.py`](miniclaw/dev_logging.py) | Developer logging to `~/.miniclaw/logs/`                                               |
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `/plan` | Enter plan mode (read-only exploration) |
+| Command               | Description                             |
+| --------------------- | --------------------------------------- |
+| `/plan`               | Enter plan mode (read-only exploration) |
 | `/plan <description>` | Enter plan mode with a task description |
-| `/clear` | Clear conversation history |
-| `/model` | Show current model |
-| `/quit` `/exit` `/q` | Exit |
+| `/clear`              | Clear conversation history              |
+| `/model`              | Show current model                      |
+| `/quit` `/exit` `/q`  | Exit                                    |
 
 **Keyboard shortcuts:** `Ctrl+J` newline, `Up/Down` history, `Ctrl+C` cancel, `Ctrl+D` exit.
 
@@ -162,12 +168,12 @@ Run `miniclaw init` to create the default config. Use `miniclaw init --force` to
 
 All `llm` fields can be overridden by environment variables (env vars take priority):
 
-| Variable | Description |
-|----------|-------------|
-| `LLM_API_KEY` | LLM API key |
-| `LLM_MODEL` | Model name (default: `MiniMax-M2.7`) |
-| `LLM_BASE_URL` | OpenAI-compatible API base URL |
-| `LLM_HTTP_TIMEOUT` | HTTP timeout in seconds (default: 300) |
+| Variable             | Description                                         |
+| -------------------- | --------------------------------------------------- |
+| `LLM_API_KEY`        | LLM API key                                         |
+| `LLM_MODEL`          | Model name (default: `MiniMax-M2.7`)                |
+| `LLM_BASE_URL`       | OpenAI-compatible API base URL                      |
+| `LLM_HTTP_TIMEOUT`   | HTTP timeout in seconds (default: 300)              |
 | `MINICLAW_WORKSPACE` | Workspace directory (also `-w` flag; CLI flag wins) |
 
 ## Skills
@@ -221,10 +227,10 @@ See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 ## Design Documents
 
-| Document | Description |
-|----------|-------------|
+| Document                                                  | Description                                                                            |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | [架构分析](docs/design/miniclaw-architecture-analysis.md) | 从 Agent Loop、Skill 机制、Tool 设计、Prompt Cache、Plan Mode 五个维度深入分析项目架构 |
-| [Sub-agent](docs/design/subagent.md) | Sub-agent（`Agent` tool）设计与实现说明 |
+| [Sub-agent](docs/design/subagent.md)                      | Sub-agent（`Agent` tool）设计与实现说明                                                |
 
 ## Running Tests
 
