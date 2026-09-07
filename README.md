@@ -133,7 +133,8 @@ Each module has a single responsibility -- read through them in this order:
 | --------------------- | --------------------------------------- |
 | `/plan`               | Enter plan mode (read-only exploration) |
 | `/plan <description>` | Enter plan mode with a task description |
-| `/clear`              | Clear conversation history              |
+| `/todo` `/todos`      | Show the current task list              |
+| `/clear`              | Clear conversation history (and todos)  |
 | `/model`              | Show current model                      |
 | `/quit` `/exit` `/q`  | Exit                                    |
 
@@ -207,7 +208,6 @@ workspace/
 
 {workspace}/.miniclaw/          # Workspace-level (per project)
 ├── config.json                 # Workspace config (higher priority)
-├── todos.json                  # Current task list (managed by todo_write)
 ├── plans/                      # Plan files
 ├── rules/                      # Project-specific rule .md files
 └── skills/                     # Skills directory

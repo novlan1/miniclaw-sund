@@ -130,7 +130,8 @@ flowchart LR
 | -------------------- | ---------------------------- |
 | `/plan`              | 进入 Plan 模式（只读探索）   |
 | `/plan <描述>`       | 进入 Plan 模式并附带任务描述 |
-| `/clear`             | 清除对话历史                 |
+| `/todo` `/todos`     | 查看当前任务清单             |
+| `/clear`             | 清除对话历史（含任务清单）   |
 | `/model`             | 显示当前模型                 |
 | `/quit` `/exit` `/q` | 退出                         |
 
@@ -204,7 +205,6 @@ workspace/
 
 {workspace}/.miniclaw/          # 工作区级（每个项目独立）
 ├── config.json                 # 工作区配置（优先级更高）
-├── todos.json                  # 当前任务列表（由 todo_write 管理）
 ├── plans/                      # Plan 文件
 ├── rules/                      # 项目级规则 .md 文件
 └── skills/                     # 技能目录

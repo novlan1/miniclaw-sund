@@ -22,9 +22,9 @@ from miniclaw.tools.config import ToolsConfig
 from miniclaw.tools.read import handle_read
 from miniclaw.tools.search import handle_glob, handle_grep
 from miniclaw.tools.skill import handle_skill
-from miniclaw.tools.todo_write import handle_todo_write
+from miniclaw.tools.todo_write import get_todos, handle_todo_write
 from miniclaw.tools.write import handle_edit, handle_write
-from miniclaw.ui import print_tool_call
+from miniclaw.ui import print_todos, print_tool_call
 
 TOOL_HANDLERS = {
     "read": handle_read,
@@ -160,6 +160,9 @@ def execute_tool(
                 current_session_id=ctx.get("session_id"),
                 config=ctx.get("sessions_config"),
             )
+        elif name == "todo_write":
+            result = handler(args, root, tools_cfg=cfg, context=ctx)
+            print_todos(get_todos(ctx), indent=int(ctx.get("agent_depth") or 0))
         else:
             result = handler(args, root, tools_cfg=cfg)
     except PermissionError as e:
