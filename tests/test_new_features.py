@@ -273,6 +273,81 @@ class TestAskFollowup(unittest.TestCase):
         data = json.loads(result)
         self.assertIn("error", data)
 
+    def test_renders_question_and_options(self):
+        """问题与选项必须真正输出到终端，否则用户看不到选项框。"""
+        from miniclaw.tools.ask import handle_ask
+        with patch("miniclaw.tools.ask.prompt", return_value="1"), \
+                patch("miniclaw.tools.ask.console") as mock_console:
+            handle_ask({
+                "question": "Pick one",
+                "header": "Choice",
+                "options": ["React", {"label": "Vue", "description": "Simple"}],
+            }, "/tmp")
+        self.assertTrue(mock_console.print.called)
+        rendered = "".join(
+            str(getattr(call.args[0], "renderable", call.args[0]) if call.args else "")
+            for call in mock_console.print.call_args_list
+        )
+        self.assertIn("Pick one", rendered)
+        self.assertIn("React", rendered)
+        self.assertIn("Vue", rendered)
+        self.assertIn("Simple", rendered)
+
+    def test_renders_without_options(self):
+        from miniclaw.tools.ask import handle_ask
+        with patch("miniclaw.tools.ask.prompt", return_value="free text"), \
+                patch("miniclaw.tools.ask.console") as mock_console:
+            handle_ask({"question": "Anything?"}, "/tmp")
+        self.assertTrue(mock_console.print.called)
+
+    def test_maps_index_to_label(self):
+        from miniclaw.tools.ask import handle_ask
+        with patch("miniclaw.tools.ask.prompt", return_value="2"), \
+                patch("miniclaw.tools.ask.console"):
+            result = handle_ask({
+                "question": "Pick one",
+                "options": ["React", {"label": "Vue"}, "Svelte"],
+            }, "/tmp")
+        data = json.loads(result)
+        self.assertEqual(data["answer"], "2")
+        self.assertEqual(data["selected"], ["Vue"])
+
+    def test_maps_multi_select_indexes(self):
+        from miniclaw.tools.ask import handle_ask
+        with patch("miniclaw.tools.ask.prompt", return_value="1, 3"), \
+                patch("miniclaw.tools.ask.console"):
+            result = handle_ask({
+                "question": "Select",
+                "options": ["A", "B", "C"],
+                "multi_select": True,
+            }, "/tmp")
+        data = json.loads(result)
+        self.assertEqual(data["selected"], ["A", "C"])
+
+    def test_free_text_answer_has_no_selected(self):
+        from miniclaw.tools.ask import handle_ask
+        for raw in ("Svelte", "0", "9", ""):
+            with self.subTest(raw=raw):
+                with patch("miniclaw.tools.ask.prompt", return_value=raw), \
+                        patch("miniclaw.tools.ask.console"):
+                    result = handle_ask({
+                        "question": "Pick one",
+                        "options": ["A", "B"],
+                    }, "/tmp")
+                data = json.loads(result)
+                self.assertNotIn("selected", data)
+                self.assertEqual(data["answer"], raw.strip())
+
+    def test_cancelled_input_returns_error(self):
+        from miniclaw.tools.ask import handle_ask
+        for exc in (EOFError, KeyboardInterrupt):
+            with self.subTest(exc=exc.__name__):
+                with patch("miniclaw.tools.ask.prompt", side_effect=exc), \
+                        patch("miniclaw.tools.ask.console"):
+                    result = handle_ask({"question": "Q"}, "/tmp")
+                data = json.loads(result)
+                self.assertIn("error", data)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -5,17 +5,89 @@ import json
 
 from prompt_toolkit import prompt
 from prompt_toolkit.formatted_text import HTML
+from rich.panel import Panel
+from rich.text import Text
+
+from miniclaw.ui import console
+
+_PROMPT_MARKER = HTML(" <style fg='ansigreen'>❯</style> ")
 
 
-def _format_option(opt: dict | str, idx: int) -> str:
-    """格式化单个选项。"""
+def _option_label(opt: dict | str, idx: int) -> str:
+    """取选项标题。"""
     if isinstance(opt, dict):
-        label = opt.get("label", f"选项 {idx + 1}")
-        desc = opt.get("description", "")
-        if desc:
-            return f"  {idx + 1}. {label} — {desc}"
-        return f"  {idx + 1}. {label}"
-    return f"  {idx + 1}. {str(opt)}"
+        return str(opt.get("label", f"选项 {idx + 1}"))
+    return str(opt)
+
+
+def _option_desc(opt: dict | str) -> str:
+    """取选项说明（仅 dict 形式有）。"""
+    if isinstance(opt, dict):
+        return str(opt.get("description", ""))
+    return ""
+
+
+def _render_question(
+    header: str,
+    question: str,
+    options: list | None,
+    multi_select: bool,
+) -> None:
+    """把问题与选项渲染到终端。
+
+    用 rich.Text 逐段追加而非 markup 字符串，避免 question/label 中的
+    `[`、`<` 被当作标记解析。
+    """
+    body = Text()
+    body.append(question, style="bold cyan")
+
+    if options:
+        for i, opt in enumerate(options):
+            body.append(f"\n  {i + 1}. ", style="bold green")
+            body.append(_option_label(opt, i))
+            desc = _option_desc(opt)
+            if desc:
+                body.append(f" — {desc}", style="dim")
+        hint = (
+            "输入序号（多选，逗号分隔，如 1,3）"
+            if multi_select
+            else "输入序号"
+        )
+        body.append(f"\n\n{hint}，也可直接输入自由文本", style="dim")
+    else:
+        body.append("\n\n请直接输入你的回答", style="dim")
+
+    console.print()
+    console.print(
+        Panel(
+            body,
+            title=f"[bold yellow]{header}[/bold yellow]" if header else "[bold yellow]需要你确认[/bold yellow]",
+            border_style="yellow",
+            expand=False,
+            padding=(0, 1),
+        )
+    )
+
+
+def _resolve_selection(
+    user_input: str,
+    options: list,
+    multi_select: bool,
+) -> list[str]:
+    """把用户输入的序号解析为选项标题；无法解析时返回空列表。"""
+    raw = user_input.strip()
+    if not raw:
+        return []
+    parts = [p.strip() for p in raw.split(",")] if multi_select else [raw]
+    labels: list[str] = []
+    for part in parts:
+        if not part.isdigit():
+            return []
+        idx = int(part) - 1
+        if idx < 0 or idx >= len(options):
+            return []
+        labels.append(_option_label(options[idx], idx))
+    return labels
 
 
 def handle_ask(
@@ -41,41 +113,20 @@ def handle_ask(
         return json.dumps({"error": "options 必须是数组"}, ensure_ascii=False)
     multi_select = bool(args.get("multi_select", False))
 
-    # 构建显示文本
-    lines = []
-    if header:
-        lines.append(HTML(f"<style fg='ansiyellow'><b>{header}</b></style>"))
-    lines.append(HTML(f"<style fg='ansicyan'>{question}</style>"))
+    _render_question(header, question, options, multi_select)
 
-    if options and len(options) > 0:
-        for i, opt in enumerate(options):
-            lines.append(_format_option(opt, i))
-
-        if multi_select:
-            lines.append(HTML("\n<style fg='ansigreen'>输入序号（逗号分隔，如 1,3）</style>"))
-            user_input = prompt(
-                HTML(" <style fg='ansigreen'>❯</style> "),
-                multiline=False,
-            )
-        else:
-            lines.append(HTML("\n<style fg='ansigreen'>输入序号</style>"))
-            user_input = prompt(
-                HTML(" <style fg='ansigreen'>❯</style> "),
-                multiline=False,
-            )
-
-        # 格式化回答
+    try:
+        user_input = prompt(_PROMPT_MARKER, multiline=False)
+    except (EOFError, KeyboardInterrupt):
         return json.dumps(
-            {"answer": user_input.strip(), "question": question},
+            {"error": "用户取消了本次提问", "question": question},
             ensure_ascii=False,
         )
-    else:
-        # 无选项时自由输入
-        user_input = prompt(
-            HTML(" <style fg='ansigreen'>❯</style> "),
-            multiline=False,
-        )
-        return json.dumps(
-            {"answer": user_input.strip(), "question": question},
-            ensure_ascii=False,
-        )
+
+    answer = user_input.strip()
+    payload: dict = {"answer": answer, "question": question}
+    if options:
+        selected = _resolve_selection(answer, options, multi_select)
+        if selected:
+            payload["selected"] = selected
+    return json.dumps(payload, ensure_ascii=False)
